@@ -38,14 +38,27 @@ function App() {
   );
 
   // ✅ SAVE ORDER TO DATABASE (ADDED)
-  const saveOrderToDB = async () => {
-    const order = {
-      name,
-      phone,
-      note,
-      items: cart,
-      total,
-    };
+ const saveOrderToDB = async () => {
+  const order = {
+    name,
+    phone,
+    note,
+    items: cart,
+    total,
+  };
+
+  try {
+    await fetch("https://kota-app-iybq.onrender.com/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(order),
+    });
+  } catch (error) {
+    console.log("Error saving order:", error);
+  }
+};
 
     try {
       await fetch("http://localhost:5000/orders", {

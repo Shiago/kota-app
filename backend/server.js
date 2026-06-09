@@ -1,7 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-
 require("dotenv").config();
 
 const app = express();
@@ -9,18 +8,24 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB connect
+/* =========================
+   MONGO DB CONNECTION
+========================= */
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
 
-// Test route
+/* =========================
+   TEST ROUTE
+========================= */
 app.get("/", (req, res) => {
   res.send("Kota backend is running 🚀");
 });
 
-// Order schema
+/* =========================
+   ORDER MODEL
+========================= */
 const orderSchema = new mongoose.Schema({
   name: String,
   phone: String,
@@ -41,11 +46,12 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model("Order", orderSchema);
 
-// Save order
+/* =========================
+   SAVE ORDER
+========================= */
 app.post("/orders", async (req, res) => {
   try {
     const order = new Order(req.body);
-
     await order.save();
 
     res.json({
@@ -57,28 +63,27 @@ app.post("/orders", async (req, res) => {
   }
 });
 
-// Get all orders
+/* =========================
+   GET ALL ORDERS
+========================= */
 app.get("/orders", async (req, res) => {
   try {
     const orders = await Order.find().sort({ date: -1 });
-
     res.json(orders);
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
-// Update order status
+/* =========================
+   UPDATE ORDER STATUS
+========================= */
 app.put("/orders/:id", async (req, res) => {
   try {
     const updatedOrder = await Order.findByIdAndUpdate(
       req.params.id,
-      {
-        status: req.body.status,
-      },
-      {
-        new: true,
-      }
+      { status: req.body.status },
+      { new: true }
     );
 
     res.json(updatedOrder);
@@ -87,16 +92,9 @@ app.put("/orders/:id", async (req, res) => {
   }
 });
 
-const PORT = 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-
-
-
-
+/* =========================
+   TRACK ORDER BY PHONE
+========================= */
 app.get("/orders/track/:phone", async (req, res) => {
   try {
     const orders = await Order.find({ phone: req.params.phone });
@@ -104,4 +102,13 @@ app.get("/orders/track/:phone", async (req, res) => {
   } catch (err) {
     res.status(500).json(err);
   }
+});
+
+/* =========================
+   PORT (IMPORTANT FOR RENDER)
+========================= */
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
