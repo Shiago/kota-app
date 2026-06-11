@@ -4,6 +4,8 @@ import menu from "./data/menu";
 const WHATSAPP_NUMBER = "27725356833";
 
 function App() {
+  console.log("🔥 APP IS RUNNING"); // ADD THIS
+
   const [cart, setCart] = useState([]);
 
   // Customer details
